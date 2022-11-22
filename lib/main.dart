@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ieproject/pages/manager/view_suggestion.dart';
 import 'package:ieproject/pages/signin_signup/sign_in.dart';
 import 'package:ieproject/pages/signin_signup/sign_up.dart';
 import 'package:ieproject/pages/student/suggestion_form.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color(0xfffed53e),
       ),
-      home: StudentSuggestions(),
+      home: ViewSuggestion(),
     );
   }
 }
