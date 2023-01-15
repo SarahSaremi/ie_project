@@ -19,16 +19,19 @@ class SignUp extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 25),
             child: Align(
-              alignment: Alignment.topLeft,
+              alignment: Alignment.center,
               child: Text(
                 'سامانه رسیدگی به پیشنهادات دانشجویان',
+                style: TextStyle(
+                    color: Color(0xff547dbb)
+                ),
               ),
             ),
           ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 25),
-            child: Align(
-              alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(top: 40, bottom: 20),
+            child: const Align(
+              alignment: Alignment.center,
               child: Text(
                 'ثبت نام',
               ),

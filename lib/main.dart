@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ieproject/pages/manager/suggestions.dart';
 import 'package:ieproject/pages/manager/view_suggestion.dart';
 import 'package:ieproject/pages/signin_signup/sign_in.dart';
 import 'package:ieproject/pages/signin_signup/sign_up.dart';
@@ -18,8 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: const Color(0xfffed53e),
+        fontFamily: 'Vazir'
       ),
-      home: ViewSuggestion(),
+      home: ManagerSuggestions(),
     );
   }
 }

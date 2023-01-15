@@ -19,9 +19,12 @@ class SignIn extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 25),
             child: Align(
-              alignment: Alignment.topLeft,
+              alignment: Alignment.center,
               child: Text(
                 'سامانه رسیدگی به پیشنهادات دانشجویان',
+                style: TextStyle(
+                  color: Color(0xff547dbb)
+                ),
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ieproject/pages/student/suggestions.dart';
 
 import '../../widgets/button.dart';
 import '../../widgets/textfield_widget.dart';
@@ -9,15 +10,20 @@ class SuggestionForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Color(0xffffd43e),
+        elevation: 0.0,
+      ),
       body: Column(
         children: [
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 25),
-            child: Align(
-              alignment: Alignment.topLeft,
+            child: Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(top: 50, bottom: 20),
               child: Text(
                 'فرم ثبت پیشنهاد',
+                style: TextStyle(fontSize: 22),
               ),
             ),
           ),
@@ -32,10 +38,21 @@ class SuggestionForm extends StatelessWidget {
           IETextField(
             label: 'متن پیشنهاد',
             isPass: false,
+            multiline: true,
           ),
           IEButton(
-            onPressed: () {},
-            child: Text('ثبت'),
+            onPressed: () {
+              print("submit form api");
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StudentSuggestions(),
+                ),
+              );
+            },
+            child: Text(
+              'ثبت',
+              style: TextStyle(color: Colors.black, fontSize: 15),
+            ),
           ),
         ],
       ),
