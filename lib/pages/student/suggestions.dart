@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:ieproject/pages/student/suggestion_form.dart';
 import 'package:ieproject/widgets/student_list_tile.dart';
+import 'package:intl/intl.dart';
 
 import '../../enums.dart';
 import '../manager/view_suggestion.dart';
-
 
 class StudentSuggestions extends StatefulWidget {
   const StudentSuggestions({Key? key}) : super(key: key);
@@ -16,76 +17,33 @@ class StudentSuggestions extends StatefulWidget {
 }
 
 class _StudentSuggestionsState extends State<StudentSuggestions> {
-
   var suggestionList = [];
 
   void getSuggestions() async {
-    // try {
-    //   Uri url = Uri.parse(BASE_API + 'cands/suggestion/?student_id=' + user_id);
-    //   Response response = await get(url);
-    //
-    //   if (response.statusCode == 200) {
-    //     var data = jsonDecode(response.body.toString());
-    //     suggestionList = data;
-    //   } else {
-    //     print('failed');
-    //   }
-    // } catch (e) {
-    //   print(e);
-    //   print(e.toString());
-    // }
-    suggestionList = [
-      {
-        "id": 1,
-        "student_name": "Gholi Gholizadeh",
-        "student_number": "97243030",
-        "subject": "بهبود آموزش",
-        "suggestion_text": "یه نظری دارم درباره بهبود آموزش",
-        "submission_date": "2023-01-17T12:32:02.588064Z",
-        "related_department": "آموزش دانشکده",
-        "state": "NOT CHECKED",
-        "student": 2
-      },
-      {
-        "id": 3,
-        "student_name": "Gholi Gholizadeh",
-        "student_number": "97243030",
-        "subject": " 3بهبود آموزش",
-        "suggestion_text": "یه نظری دارم درباره بهبود آموزش",
-        "submission_date": "2023-01-17T12:35:23.877967Z",
-        "related_department": "آموزش دانشکده",
-        "state": "NOT CHECKED",
-        "student": 2
-      },
-      {
-        "id": 4,
-        "student_name": "Taghi Taghizadeh",
-        "student_number": "97243031",
-        "subject": "4بهبود آموزش",
-        "suggestion_text": "یه نظری دارم درباره بهبود آموزش",
-        "submission_date": "2023-01-17T12:37:21.178679Z",
-        "related_department": "آموزش دانشکده",
-        "state": "NOT CHECKED",
-        "student": 3
-      },
-      {
-        "id": 2,
-        "student_name": "Gholi Gholizadeh",
-        "student_number": "97243030",
-        "subject": " 2بهبود آموزش",
-        "suggestion_text": "یه نظری دارم درباره بهبود آموزش",
-        "submission_date": "2023-01-17T13:00:05.954016Z",
-        "related_department": "آموزش دانشکده",
-        "state": "CHECKED",
-        "student": 2
+    try {
+      Uri url = Uri.parse(BASE_API + 'cands/suggestion/?student_id=' + user_id);
+      Response response =
+          await get(url, headers: {"Content-Type": "text/html; charset=utf-8"});
+      print(json.decode(response.body));
+
+      if (response.statusCode ~/ 100 == 2) {
+        var data = jsonDecode(response.body);
+        print(data.length);
+        suggestionList = data;
+      } else {
+        print('failed');
       }
-    ];
+    } catch (e) {
+      print(e);
+      print(e.toString());
+    }
   }
 
   @override
   void initState() {
     getSuggestions();
     super.initState();
+    Future.delayed(Duration(minutes: 1), () async {});
   }
 
   @override
@@ -103,7 +61,11 @@ class _StudentSuggestionsState extends State<StudentSuggestions> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xffffd43e),
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const SuggestionForm()),
+          );
+        },
       ),
       body: ListView.builder(
           itemCount: suggestionList.length,
@@ -112,19 +74,20 @@ class _StudentSuggestionsState extends State<StudentSuggestions> {
               child: Card(
                 child: IEStudentListTile(
                   title: suggestionList[index]['subject'],
-                  // state: STATES[suggestionLisionList[index]['state']],
-                  state: suggestionList[index]['state'],
-                  date: suggestionList[index]['submission_date'],
+                  state: STATES[suggestionList[index]['state']].toString(),
+                  date: DateFormat.yMMMEd()
+                      .format(DateTime.parse(
+                          suggestionList[index]['submission_date']))
+                      .toString(),
                 ),
               ),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ViewSuggestion(
-                          isManager: false,
-                          suggestionId: suggestionList[index]['id'].toString(),
-                        ),
+                    builder: (context) => ViewSuggestion(
+                      isManager: false,
+                      suggestionId: suggestionList[index]['id'].toString(),
+                    ),
                   ),
                 );
               },

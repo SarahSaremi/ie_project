@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ieproject/pages/manager/suggestions.dart';
+import 'package:intl/intl.dart';
 
 import '../../enums.dart';
 import '../../widgets/button.dart';
@@ -33,31 +34,24 @@ class _ViewSuggestionState extends State<ViewSuggestion> {
   var suggestionData = {};
 
   void getSuggestionDetail() async {
-    // try {
-    //   Uri url = Uri.parse(BASE_API + 'cands/suggestion/' + suggestionId + '/');
-    //   Response response = await get(url);
-    //
-    //   if (response.statusCode == 200) {
-    //     var data = jsonDecode(response.body.toString());
-    //     suggestionData = data;
-    //   } else {
-    //     print('failed');
-    //   }
-    // } catch (e) {
-    //   print(e);
-    //   print(e.toString());
-    // }
-    suggestionData = {
-      "id": 1,
-      "student_name": "Gholi Gholizadeh",
-      "student_number": "97243030",
-      "subject": "بهبود آموزش",
-      "suggestion_text": "یه نظری دارم درباره بهبود آموزش",
-      "submission_date": "2023-01-17T12:32:02.588064Z",
-      "related_department": "آموزش دانشکده",
-      "state": "NOT CHECKED",
-      "student": 2
-    };
+    try {
+      Uri url =
+          Uri.parse(BASE_API + 'cands/suggestion_details?id=' + suggestionId);
+      Response response = await get(url);
+      print(url);
+      print(response.body);
+
+      if (response.statusCode ~/ 100 == 2) {
+        var data = jsonDecode(response.body);
+        suggestionData = data;
+        dropDownValue = suggestionData['state'];
+      } else {
+        print('failed');
+      }
+    } catch (e) {
+      print(e);
+      print(e.toString());
+    }
   }
 
   void updateSuggestionState(String state) async {
@@ -79,10 +73,13 @@ class _ViewSuggestionState extends State<ViewSuggestion> {
 
   @override
   void initState() {
-    getSuggestionDetail();
-    dropDownValue = suggestionData['state'];
+    Future.delayed(Duration(milliseconds: 30), () async {
+      getSuggestionDetail();
+    });
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +116,9 @@ class _ViewSuggestionState extends State<ViewSuggestion> {
           ),
           IESuggestionData(
             label: 'تاریخ ثبت',
-            data: DateTime.parse(suggestionData['submission_date']).toString(),
+            data: DateFormat.yMMMEd()
+                .format(DateTime.parse(suggestionData['submission_date']))
+                .toString(),
           ),
           Container(
               width: MediaQuery.of(context).size.width,
@@ -137,42 +136,46 @@ class _ViewSuggestionState extends State<ViewSuggestion> {
               )),
           isManager
               ? Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-                  decoration: const BoxDecoration(
-                      color: Color(0xfffff4cc),
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  child: DropdownButton(
-                  value: dropDownValue,
-                  items: const [
-                    DropdownMenuItem(
-                        value: 'CHECKED', child: Text('بررسی شده')),
-                    DropdownMenuItem(
-                        value: 'CHECKING', child: Text('در حال بررسی')),
-                    DropdownMenuItem(
-                        value: 'NOT CHECKED', child: Text('بررسی نشده')),
+                  children: [
+                    Expanded(
+                        flex: 2,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 3),
+                          decoration: const BoxDecoration(
+                              color: Color(0xfffff4cc),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: DropdownButton(
+                            value: dropDownValue,
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'CHECKED', child: Text('بررسی شده')),
+                              DropdownMenuItem(
+                                  value: 'CHECKING',
+                                  child: Text('در حال بررسی')),
+                              DropdownMenuItem(
+                                  value: 'NOT CHECKED',
+                                  child: Text('بررسی نشده')),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                dropDownValue = value.toString();
+                              });
+                            },
+                          ),
+                        )),
+                    const Expanded(
+                        child: Center(
+                      child: Text('وضعیت'),
+                    )),
                   ],
-                  onChanged: (value) {
-                    setState(() {
-                      dropDownValue = value.toString();
-                    });
-                  },
-                ),
                 )
-              ),
-              const Expanded(
-                  child: Center(
-                    child: Text('وضعیت'),
-                  )),
-            ],
-          )
               : IESuggestionData(
                   label: 'وضعیت',
-                  data: suggestionData['state'],
+                  data: STATES[suggestionData['state']].toString(),
                 ),
           isManager
               ? IEButton(

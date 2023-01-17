@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ieproject/pages/student/suggestions.dart';
@@ -20,14 +22,20 @@ class _SuggestionFormState extends State<SuggestionForm> {
 
   void submitSuggestion(String subject, department, text) async {
     try {
-      Response response = await post(Uri.parse(BASE_API), body: {
-        'subject': subject,
-        'related_department': department,
-        'suggestion_text': text,
-        'student': user_id,
-      });
+      Response response = await post(Uri.parse(BASE_API + "cands/suggestion/"), headers: {
+        "Content-Type": "application/json"
+      }, body: json.encode(
+          {
+            'subject': subject,
+            'related_department': department,
+            'suggestion_text': text,
+            'student': user_id,
+            'state': 'NOT CHECKED',
+          }
+      ));
+      print(response.body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode~/100 == 2) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => const StudentSuggestions(),
         ));
@@ -55,49 +63,51 @@ class _SuggestionFormState extends State<SuggestionForm> {
         backgroundColor: Color(0xffffd43e),
         elevation: 0.0,
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 25),
-            child: Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(top: 50, bottom: 20),
-              child: const Text(
-                'فرم ثبت پیشنهاد',
-                style: TextStyle(fontSize: 22),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              child: Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(top: 50, bottom: 20),
+                child: const Text(
+                  'فرم ثبت پیشنهاد',
+                  style: TextStyle(fontSize: 22),
+                ),
               ),
             ),
-          ),
-          IETextField(
-            label: 'موضوع',
-            isPass: false,
-            controller: subjectController,
-          ),
-          IETextField(
-            label: 'مسئول مربوطه',
-            isPass: false,
-            controller: departmentController,
-          ),
-          IETextField(
-            label: 'متن پیشنهاد',
-            isPass: false,
-            multiline: true,
-            controller: textController,
-          ),
-          IEButton(
-            onPressed: () {
-              submitSuggestion(
-                  subjectController.text.toString(),
-                  departmentController.text.toString(),
-                  textController.text.toString());
-            },
-            child: const Text(
-              'ثبت',
-              style: TextStyle(color: Colors.black, fontSize: 15),
+            IETextField(
+              label: 'موضوع',
+              isPass: false,
+              controller: subjectController,
             ),
-          ),
-        ],
-      ),
+            IETextField(
+              label: 'مسئول مربوطه',
+              isPass: false,
+              controller: departmentController,
+            ),
+            IETextField(
+              label: 'متن پیشنهاد',
+              isPass: false,
+              multiline: true,
+              controller: textController,
+            ),
+            IEButton(
+              onPressed: () {
+                submitSuggestion(
+                    subjectController.text.toString(),
+                    departmentController.text.toString(),
+                    textController.text.toString());
+              },
+              child: const Text(
+                'ثبت',
+                style: TextStyle(color: Colors.black, fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      )
     );
   }
 }

@@ -30,21 +30,16 @@ class _SignInState extends State<SignIn> {
   void login(String username, password) async {
     try {
       Uri url = Uri.parse(BASE_API + 'api-token-auth/');
-      print(url);
       Response response = await post(Uri.parse(BASE_API + 'api-token-auth/'),
-          body: {
-            'email': username,
-            'password': password
-      });
-
-      if (response.statusCode == 200) {
+          headers: {"Content-Type": "application/json"},
+          body: json.encode({'username': username, 'password': password}));
+      if (response.statusCode ~/ 100 == 2) {
         var data = jsonDecode(response.body.toString());
-        print(data['token']);
         print('Login successfully');
         TOKEN = data['token'];
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => StudentSuggestions(),
+            builder: (context) => const StudentSuggestions(),
           ),
         );
       } else {
@@ -106,10 +101,8 @@ class _SignInState extends State<SignIn> {
             ),
             IEButton(
               onPressed: () {
-                login(
-                    usernameController.text.toString(),
-                    passwordController.text.toString()
-                );
+                login(usernameController.text.toString(),
+                    passwordController.text.toString());
               },
               child: const Text('ورود'),
             ),
