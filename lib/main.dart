@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xfffed53e),
         fontFamily: 'Vazir'
       ),
-      home: SignIn(),
+      home: ManagerSuggestions(),
     );
   }
 }
