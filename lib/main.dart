@@ -6,6 +6,7 @@ import 'package:ieproject/pages/signin_signup/sign_up.dart';
 import 'package:ieproject/pages/student/suggestion_form.dart';
 import 'package:ieproject/pages/student/suggestions.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xfffed53e),
         fontFamily: 'Vazir'
       ),
-      home: ManagerSuggestions(),
+      home: SignIn(),
     );
   }
 }

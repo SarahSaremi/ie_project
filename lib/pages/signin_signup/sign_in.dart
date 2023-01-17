@@ -1,70 +1,129 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:ieproject/pages/signin_signup/sign_up.dart';
+import 'package:ieproject/pages/student/suggestions.dart';
+
+import '../../enums.dart';
 import '../../widgets/button.dart';
 import '../../widgets/textfield_widget.dart';
 
-class SignIn extends StatelessWidget {
-  const SignIn({key}) : super(key: key);
+class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
+
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void login(String username, password) async {
+    try {
+      Uri url = Uri.parse(BASE_API + 'api-token-auth/');
+      print(url);
+      Response response = await post(Uri.parse(BASE_API + 'api-token-auth/'),
+          body: {
+            'email': username,
+            'password': password
+      });
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body.toString());
+        print(data['token']);
+        print('Login successfully');
+        TOKEN = data['token'];
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => StudentSuggestions(),
+          ),
+        );
+      } else {
+        print('failed');
+      }
+    } catch (e) {
+      print(e);
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            color: Colors.red,
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 25),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'سامانه رسیدگی به پیشنهادات دانشجویان',
-                style: TextStyle(
-                  color: Color(0xff547dbb)
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              margin: const EdgeInsets.only(top: 60, bottom: 20),
+              child: const Image(image: AssetImage('assets/Sbu-logo.png')),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'سامانه رسیدگی به پیشنهادات دانشجویان',
+                  style: TextStyle(fontSize: 19, color: Color(0xff547dbb)),
                 ),
               ),
             ),
-          ),
-          Container(
-            width: 60,
-            height: 60,
-            color: Colors.blueAccent,
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 25),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                'ورود به سامانه',
+            Container(
+              width: 200,
+              height: 200,
+              margin: const EdgeInsets.only(top: 20, bottom: 60),
+              child: const Image(image: AssetImage('assets/study-photo.jpg')),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'ورود به سامانه',
+                ),
               ),
             ),
-          ),
-          IETextField(
-            label: 'نام کاربری',
-            isPass: false,
-          ),
-          IETextField(
-            label: 'رمز عبور',
-            isPass: true,
-          ),
-          GestureDetector(
-              onTap: () {},
-              child: Container(
-                child: Text('فراموشی رمز عبور'),
-              )),
-          IEButton(
-            onPressed: () {},
-            child: Text('ورود'),
-          ),
-          GestureDetector(
-              onTap: () {},
-              child: Container(
-                child: Text('حساب کاربری ندارید؟ ثبت نام'),
-              )),
-        ],
+            IETextField(
+              label: 'نام کاربری',
+              isPass: false,
+              controller: usernameController,
+            ),
+            IETextField(
+              label: 'رمز عبور',
+              isPass: true,
+              controller: passwordController,
+            ),
+            IEButton(
+              onPressed: () {
+                login(
+                    usernameController.text.toString(),
+                    passwordController.text.toString()
+                );
+              },
+              child: const Text('ورود'),
+            ),
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SignUp(),
+                    ),
+                  );
+                },
+                child: const Text('حساب کاربری ندارید؟ ثبت نام')),
+          ],
+        ),
       ),
     );
   }

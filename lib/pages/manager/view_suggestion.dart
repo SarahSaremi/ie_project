@@ -1,14 +1,74 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:ieproject/pages/manager/suggestions.dart';
 
+import '../../enums.dart';
 import '../../widgets/button.dart';
 import '../../widgets/suggestion_data.dart';
 import '../../widgets/textfield_widget.dart';
 import '../student/suggestions.dart';
 
-class ViewSuggestion extends StatelessWidget {
+class ViewSuggestion extends StatefulWidget {
   final bool isManager;
-  const ViewSuggestion({key, required this.isManager}) : super(key: key);
+  final String suggestionId;
+
+  const ViewSuggestion(
+      {Key? key, required this.isManager, required this.suggestionId})
+      : super(key: key);
+
+  @override
+  State<ViewSuggestion> createState() =>
+      _ViewSuggestionState(this.isManager, this.suggestionId);
+}
+
+class _ViewSuggestionState extends State<ViewSuggestion> {
+  final bool isManager;
+  final String suggestionId;
+
+  _ViewSuggestionState(this.isManager, this.suggestionId);
+
+  var suggestionData = {};
+
+  void getSuggestionDetail() async {
+    try {
+      Uri url = Uri.parse(BASE_API + 'cands/suggestion/' + suggestionId + '/');
+      Response response = await get(url);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body.toString());
+        suggestionData = data;
+      } else {
+        print('failed');
+      }
+    } catch (e) {
+      print(e);
+      print(e.toString());
+    }
+  }
+
+  void updateSuggestionState(String state) async {
+    try {
+      Uri url = Uri.parse(BASE_API + 'cands/update_suggestion_state/?state=' + state);
+      Response response = await post(url);
+
+      if (response.statusCode == 200) {
+        print("state changed.");
+      } else {
+        print('failed');
+      }
+    } catch (e) {
+      print(e);
+      print(e.toString());
+    }
+  }
+
+  @override
+  void initState() {
+    getSuggestionDetail();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,50 +93,53 @@ class ViewSuggestion extends StatelessWidget {
           ),
           IESuggestionData(
             label: 'نام و نام خانوادگی',
-            data: 'قلی قلی زاده',
+            data: suggestionData['student_name'],
           ),
           IESuggestionData(
             label: 'شماره دانشجویی',
-            data: '98243055',
+            data: suggestionData['student_number'],
           ),
           IESuggestionData(
             label: 'مسئول مربوطه',
-            data: 'مدیریت دانشکده',
+            data: suggestionData['related_department'],
           ),
           IESuggestionData(
             label: 'تاریخ ثبت',
-            data: '1400-10-10',
+            data: suggestionData['data'],
           ),
           Container(
             width: MediaQuery.of(context).size.width,
             height: 180,
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: const BoxDecoration(
                 color: Color(0xfffff4cc),
                 borderRadius: BorderRadius.all(Radius.circular(20))),
           ),
-          this.isManager?
-          IESuggestionData(
-            label: 'وضعیت',
-            data: 'در حال بررسی',
-          ): IESuggestionData(
-            label: 'وضعیت',
-            data: 'در حال بررسی',
-          ),
-          this.isManager?  IEButton(
-            onPressed: () {
-              print("update suggestion api");
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ManagerSuggestions(),
+          isManager
+              ? IESuggestionData(
+                  label: 'وضعیت',
+                  data: 'در حال بررسی',
+                )
+              : IESuggestionData(
+                  label: 'وضعیت',
+                  data: suggestionData['state'],
                 ),
-              );
-            },
-            child: Text(
-              'ثبت',
-              style: TextStyle(color: Colors.black, fontSize: 15),
-            ),
-          ): Container()
+          isManager
+              ? IEButton(
+                  onPressed: () {
+                    updateSuggestionState("state");
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ManagerSuggestions(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'ثبت',
+                    style: TextStyle(color: Colors.black, fontSize: 15),
+                  ),
+                )
+              : Container()
         ],
       ),
     );

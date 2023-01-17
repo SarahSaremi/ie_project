@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 class IEManagerListTile extends StatelessWidget {
   final String title;
+  final String name;
   final String state;
   final String date;
 
-  const IEManagerListTile({
-    required this.title, required this.state, required this.date,
-  });
+  const IEManagerListTile({Key? key,
+    required this.title,
+    required this.state,
+    required this.date,
+    required this.name,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +30,18 @@ class IEManagerListTile extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              "نام دانشجو: " + this.state,
+              "نام دانشجو: " + name,
               style: const TextStyle(fontSize: 12),
             ),
             Text(
-              "وضعیت: " + this.state,
+              "وضعیت: " + state,
               style: const TextStyle(fontSize: 12),
             ),
           ],
         )
       ),
       leading: Text(
-        "تاریخ: " + this.date,
+        "تاریخ: " + date,
         style: const TextStyle(fontSize: 12),
       ),
     );

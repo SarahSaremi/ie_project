@@ -27,19 +27,19 @@ class SuggestionForm extends StatelessWidget {
               ),
             ),
           ),
-          IETextField(
-            label: 'موضوع',
-            isPass: false,
-          ),
-          IETextField(
-            label: 'مسئول مربوطه',
-            isPass: false,
-          ),
-          IETextField(
-            label: 'متن پیشنهاد',
-            isPass: false,
-            multiline: true,
-          ),
+          // IETextField(
+          //   label: 'موضوع',
+          //   isPass: false,
+          // ),
+          // IETextField(
+          //   label: 'مسئول مربوطه',
+          //   isPass: false,
+          // ),
+          // IETextField(
+          //   label: 'متن پیشنهاد',
+          //   isPass: false,
+          //   multiline: true,
+          // ),
           IEButton(
             onPressed: () {
               print("submit form api");
